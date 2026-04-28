@@ -1,0 +1,5 @@
+# Fichiers verrou Office
+.~lock.*
+
+# Dossier interne Claude
+.claude/
