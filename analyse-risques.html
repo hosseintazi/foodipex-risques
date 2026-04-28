@@ -141,6 +141,24 @@ select.form-input { cursor: pointer; }
 
 /* ── SMETA ref tag ── */
 .smeta-tag { display: inline-flex; align-items: center; gap: 4px; background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; border-radius: 6px; padding: 2px 8px; font-size: 10px; font-weight: 600; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Inline editing ── */
+.editable-cell { cursor: text; position: relative; }
+.editable-cell:hover::after { content: '✎'; position: absolute; top: 4px; right: 4px; font-size: 10px; color: #cbd5e1; }
+.editable-cell:hover { background: #f8fafc !important; }
+.editable-cell input, .editable-cell textarea { border: 1.5px solid #93c5fd; border-radius: 6px; padding: 4px 7px; font-size: 12px; font-family: inherit; outline: none; width: 100%; background: #fff; box-shadow: 0 0 0 3px rgba(147,197,253,.2); resize: vertical; }
+.score-cell { cursor: pointer; transition: background .1s; }
+.score-cell:hover { background: #f1f5f9 !important; }
+
+/* ── Score picker ── */
+#score-picker { position: fixed; background: #0f172a; border-radius: 12px; padding: 8px 10px; display: none; gap: 6px; z-index: 600; box-shadow: 0 12px 32px rgba(0,0,0,.4); border: 1px solid #334155; flex-direction: column; }
+#score-picker .sp-row { display: flex; gap: 6px; }
+.sp-btn { width: 38px; height: 38px; border-radius: 8px; border: 1.5px solid #334155; background: #1e293b; color: #94a3b8; font-weight: 700; font-size: 15px; cursor: pointer; transition: all .15s; }
+.sp-btn:hover { border-color: #64748b; color: #e2e8f0; }
+.sp-btn.sp-active-p { background: #eff6ff; border-color: #3b82f6; color: #1d4ed8; }
+.sp-btn.sp-active-g { background: #fffbeb; border-color: #f59e0b; color: #92400e; }
+.sp-btn.sp-active-d { background: #f5f3ff; border-color: #8b5cf6; color: #5b21b6; }
+#sp-hint { font-size: 10px; color: #64748b; padding: 2px 2px 0; text-align: center; }
 </style>
 </head>
 <body>
@@ -674,6 +692,17 @@ select.form-input { cursor: pointer; }
   </div>
 </div>
 
+<!-- ═══════════════ SCORE PICKER ═══════════════ -->
+<div id="score-picker">
+  <div class="sp-row">
+    <button class="sp-btn" data-val="1">1</button>
+    <button class="sp-btn" data-val="2">2</button>
+    <button class="sp-btn" data-val="3">3</button>
+    <button class="sp-btn" data-val="4">4</button>
+  </div>
+  <div id="sp-hint">—</div>
+</div>
+
 <!-- ═══════════════ TOAST ═══════════════ -->
 <div id="toast"></div>
 
@@ -929,26 +958,31 @@ function renderTable(overrideData) {
     const score = ipr(r.p, r.g, r.d);
     const cls = critClass(score);
     const lbl = critLabel(score);
-    return `<tr>
+    const ec = (field, content, style='') =>
+      `<td class="editable-cell" data-id="${r.id}" data-field="${field}" ondblclick="makeEditable(this)" title="Double-clic pour éditer" style="${style}">${content}</td>`;
+    return `<tr data-id="${r.id}">
       <td style="color:#94a3b8;font-size:11px;text-align:center;">${i+1}</td>
-      <td><div class="truncate-cell" title="${r.danger||''}" style="font-size:12px;color:#374151;">${r.danger||'—'}</div>
-          <div style="font-size:10px;color:#94a3b8;margin-top:2px;">${r.cat||''}</div></td>
-      <td><div class="truncate-cell" title="${r.risk||''}" style="font-size:12px;font-weight:600;color:#1e293b;">${r.risk||'—'}</div></td>
-      <td><div style="font-size:11px;color:#64748b;">${r.pop||'—'}</div></td>
-      <td style="text-align:center;"><span class="score-pill" style="background:#eff6ff;color:#1d4ed8;">${r.p||'—'}</span></td>
-      <td style="text-align:center;"><span class="score-pill" style="background:#fffbeb;color:#92400e;">${r.g||'—'}</span></td>
-      <td style="text-align:center;"><span class="score-pill" style="background:#f5f3ff;color:#5b21b6;">${r.d||'—'}</span></td>
-      <td style="text-align:center;">
-        <span class="crit-badge ${cls}" style="font-size:11px;">
-          ${lbl.emoji} ${score}
-        </span>
+      ${ec('danger', `<span class="cell-text truncate-cell" style="font-size:12px;color:#374151;">${r.danger||'—'}</span><div style="font-size:10px;color:#94a3b8;margin-top:2px;">${r.cat||''}</div>`)}
+      ${ec('risk',   `<span class="cell-text truncate-cell" style="font-size:12px;font-weight:600;color:#1e293b;">${r.risk||'—'}</span>`)}
+      ${ec('pop',    `<span class="cell-text" style="font-size:11px;color:#64748b;">${r.pop||'—'}</span>`)}
+      <td class="score-cell" onclick="showScorePicker(event,'${r.id}','p',${r.p})" title="Cliquer pour modifier" style="text-align:center;">
+        <span id="p-${r.id}" class="score-pill" style="background:#eff6ff;color:#1d4ed8;">${r.p||'—'}</span>
       </td>
-      <td><div class="truncate-cell" title="${r.existing||''}" style="font-size:11px;color:#64748b;">${r.existing||'—'}</div></td>
-      <td><div class="truncate-cell" title="${r.recommended||''}" style="font-size:11px;color:#374151;">${r.recommended||'—'}</div></td>
-      <td>${r.smeta ? `<span class="smeta-tag" title="${r.smeta}">${r.smeta}</span>` : '<span style="color:#cbd5e1;font-size:11px;">—</span>'}</td>
+      <td class="score-cell" onclick="showScorePicker(event,'${r.id}','g',${r.g})" title="Cliquer pour modifier" style="text-align:center;">
+        <span id="g-${r.id}" class="score-pill" style="background:#fffbeb;color:#92400e;">${r.g||'—'}</span>
+      </td>
+      <td class="score-cell" onclick="showScorePicker(event,'${r.id}','d',${r.d})" title="Cliquer pour modifier" style="text-align:center;">
+        <span id="d-${r.id}" class="score-pill" style="background:#f5f3ff;color:#5b21b6;">${r.d||'—'}</span>
+      </td>
+      <td id="ipr-${r.id}" style="text-align:center;">
+        <span class="crit-badge ${cls}" style="font-size:11px;">${lbl.emoji} ${score}</span>
+      </td>
+      ${ec('existing',    `<span class="cell-text truncate-cell" style="font-size:11px;color:#64748b;">${r.existing||'—'}</span>`)}
+      ${ec('recommended', `<span class="cell-text truncate-cell" style="font-size:11px;color:#374151;">${r.recommended||'—'}</span>`)}
+      ${ec('smeta',       `<span class="cell-text ${r.smeta ? 'smeta-tag' : ''}" style="${r.smeta ? '' : 'color:#cbd5e1;font-size:11px;'}">${r.smeta||'—'}</span>`)}
       <td class="no-print" style="white-space:nowrap;">
         <div style="display:flex;gap:3px;">
-          <button class="btn btn-ghost" onclick="openEditRisk('${r.id}')" title="Modifier" style="padding:4px 6px;font-size:13px;">✏️</button>
+          <button class="btn btn-ghost" onclick="openEditRisk('${r.id}')" title="Modifier (formulaire complet)" style="padding:4px 6px;font-size:13px;">✏️</button>
           <button class="btn btn-ghost" onclick="deleteRisk('${r.id}')" title="Supprimer" style="padding:4px 6px;font-size:13px;color:#ef4444;">🗑</button>
         </div>
       </td>
@@ -1450,6 +1484,108 @@ function toast(msg, type) {
   el.textContent = msg;
   container.appendChild(el);
   setTimeout(() => el.remove(), 3000);
+}
+
+// ─── SCORE PICKER ────────────────────────────────────────
+const SP_LABELS = {
+  p: ['Rare','Peu probable','Probable','Fréquent'],
+  g: ['Négligeable','Modérée','Grave','Critique'],
+  d: ['Facilement détectable','Détectable','Difficile à détecter','Non détectable']
+};
+const SP_ACTIVE = { p: 'sp-active-p', g: 'sp-active-g', d: 'sp-active-d' };
+let pickerCtx = { id: null, type: null };
+
+function showScorePicker(event, id, type, current) {
+  event.stopPropagation();
+  pickerCtx = { id, type };
+  const picker = document.getElementById('score-picker');
+  const btns = picker.querySelectorAll('.sp-btn');
+  btns.forEach(btn => {
+    const val = parseInt(btn.dataset.val);
+    btn.className = 'sp-btn' + (val === current ? ' ' + SP_ACTIVE[type] : '');
+    btn.onclick = (e) => { e.stopPropagation(); updateScore(id, type, val); hidePicker(); };
+  });
+  document.getElementById('sp-hint').textContent = SP_LABELS[type][current - 1] || '—';
+
+  const rect = event.currentTarget.getBoundingClientRect();
+  picker.style.display = 'flex';
+  const pw = 180;
+  let left = rect.left + rect.width / 2 - pw / 2;
+  left = Math.max(8, Math.min(left, window.innerWidth - pw - 8));
+  picker.style.left = left + 'px';
+  picker.style.top  = (rect.bottom + 6) + 'px';
+}
+
+function hidePicker() {
+  document.getElementById('score-picker').style.display = 'none';
+}
+
+function updateScore(id, type, val) {
+  const data = loadSiteData(state.site);
+  const tab  = currentTab(data);
+  const risk = tab.risks.find(r => r.id === id);
+  if (!risk) return;
+  risk[type] = val;
+  saveSiteData(state.site, data);
+
+  // Update score pill in DOM
+  const pill = document.getElementById(`${type}-${id}`);
+  if (pill) pill.textContent = val;
+
+  // Recalculate & update IPR cell
+  const score = ipr(risk.p, risk.g, risk.d);
+  const cls   = critClass(score);
+  const lbl   = critLabel(score);
+  const iprEl = document.getElementById(`ipr-${id}`);
+  if (iprEl) iprEl.innerHTML = `<span class="crit-badge ${cls}" style="font-size:11px;">${lbl.emoji} ${score}</span>`;
+
+  updateStats(data);
+}
+
+// Close picker when clicking elsewhere
+document.addEventListener('click', () => hidePicker());
+
+// ─── INLINE TEXT EDITING ─────────────────────────────────
+function makeEditable(cell) {
+  if (cell.querySelector('input,textarea')) return;
+  const id    = cell.dataset.id;
+  const field = cell.dataset.field;
+  const span  = cell.querySelector('.cell-text');
+  const current = span ? span.textContent.trim() : '';
+
+  const isLong = ['existing','recommended','smeta'].includes(field);
+  const el = document.createElement(isLong ? 'textarea' : 'input');
+  el.value = current === '—' ? '' : current;
+  if (isLong) el.rows = 3;
+
+  cell.innerHTML = '';
+  cell.appendChild(el);
+  el.focus();
+  el.select();
+
+  const save = () => {
+    const val = el.value.trim();
+    saveField(id, field, val);
+    const display = val || '—';
+    if (field === 'smeta') {
+      cell.innerHTML = `<span class="cell-text ${val ? 'smeta-tag' : ''}" style="${val ? '' : 'color:#cbd5e1;font-size:11px;'}">${display}</span>`;
+    } else {
+      cell.innerHTML = `<span class="cell-text truncate-cell">${display}</span>`;
+    }
+  };
+
+  el.addEventListener('blur', save);
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !isLong) { e.preventDefault(); el.blur(); }
+    if (e.key === 'Escape') { cell.innerHTML = `<span class="cell-text truncate-cell">${current}</span>`; }
+  });
+}
+
+function saveField(id, field, val) {
+  const data = loadSiteData(state.site);
+  const tab  = currentTab(data);
+  const risk = tab.risks.find(r => r.id === id);
+  if (risk) { risk[field] = val; saveSiteData(state.site, data); }
 }
 
 // ─── INIT ────────────────────────────────────────────────
