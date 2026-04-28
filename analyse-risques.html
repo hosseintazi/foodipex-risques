@@ -330,42 +330,16 @@ select.form-input { cursor: pointer; }
       <div style="flex:1;overflow:auto;">
         <table class="risk-table" id="risk-table">
           <thead>
+            <!-- Rangée 1 : colonnes normales + groupe AMDEC -->
             <tr>
-              <th style="width:32px;">#</th>
-              <th style="min-width:160px;">Danger</th>
-              <th style="min-width:180px;">Risque identifié</th>
-              <th style="min-width:110px;">Population</th>
-              <th class="has-tip" style="width:100px;text-align:center;">
-                P
-                <div class="tip-box">
-                  <strong>Probabilité d'apparition</strong><br>
-                  1 – Rare (&lt;1×/5 ans)<br>
-                  2 – Peu probable (~1×/5 ans)<br>
-                  3 – Probable (~1×/an)<br>
-                  4 – Fréquent (&gt;1×/an)
-                </div>
+              <th rowspan="2" style="width:32px;">#</th>
+              <th rowspan="2" style="min-width:160px;">Danger</th>
+              <th rowspan="2" style="min-width:180px;">Risque identifié</th>
+              <th rowspan="2" style="min-width:110px;">Population</th>
+              <th colspan="3" style="text-align:center;background:#0f172a;color:#38bdf8;font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;border-left:3px solid #38bdf8;border-right:3px solid #38bdf8;padding:6px 4px;">
+                ⚖ Cotation AMDEC &nbsp;—&nbsp; IPR = P × G × D
               </th>
-              <th class="has-tip" style="width:100px;text-align:center;">
-                G
-                <div class="tip-box">
-                  <strong>Gravité des conséquences</strong><br>
-                  1 – Négligeable<br>
-                  2 – Modérée (amende possible)<br>
-                  3 – Grave (conséquences légales)<br>
-                  4 – Critique (irréversible / SMETA)
-                </div>
-              </th>
-              <th class="has-tip" style="width:100px;text-align:center;">
-                D
-                <div class="tip-box">
-                  <strong>Détectabilité</strong><br>
-                  1 – Facilement détectable<br>
-                  2 – Détectable (inspection)<br>
-                  3 – Difficile à détecter<br>
-                  4 – Non détectable
-                </div>
-              </th>
-              <th class="has-tip" style="width:80px;text-align:center;">
+              <th rowspan="2" class="has-tip" style="width:80px;text-align:center;">
                 IPR
                 <div class="tip-box" style="left:auto;right:0;transform:none;">
                   <strong>Indice de Priorité du Risque</strong><br>
@@ -375,10 +349,43 @@ select.form-input { cursor: pointer; }
                   🔴 ≥ 28 : Critique
                 </div>
               </th>
-              <th style="min-width:150px;">Actions existantes</th>
-              <th style="min-width:160px;">Actions recommandées</th>
-              <th style="min-width:120px;">Réf. SMETA</th>
-              <th style="width:40px;" class="no-print"></th>
+              <th rowspan="2" style="min-width:150px;">Actions existantes</th>
+              <th rowspan="2" style="min-width:160px;">Actions recommandées</th>
+              <th rowspan="2" style="min-width:120px;">Réf. SMETA</th>
+              <th rowspan="2" style="width:40px;" class="no-print"></th>
+            </tr>
+            <!-- Rangée 2 : P, G, D avec couleurs distinctes -->
+            <tr>
+              <th class="has-tip" style="width:100px;text-align:center;background:#eff6ff;color:#1d4ed8;border-left:3px solid #38bdf8;border-top:1px solid #1e3a5f;">
+                P &nbsp;<span style="font-weight:400;font-size:9px;opacity:.8;">Probabilité</span>
+                <div class="tip-box">
+                  <strong>Probabilité d'apparition</strong><br>
+                  1 – Rare (&lt;1×/5 ans)<br>
+                  2 – Peu probable (~1×/5 ans)<br>
+                  3 – Probable (~1×/an)<br>
+                  4 – Fréquent (&gt;1×/an)
+                </div>
+              </th>
+              <th class="has-tip" style="width:100px;text-align:center;background:#fffbeb;color:#92400e;border-left:1px solid #fde68a;border-right:1px solid #fde68a;border-top:1px solid #1e3a5f;">
+                G &nbsp;<span style="font-weight:400;font-size:9px;opacity:.8;">Gravité</span>
+                <div class="tip-box">
+                  <strong>Gravité des conséquences</strong><br>
+                  1 – Négligeable<br>
+                  2 – Modérée (amende possible)<br>
+                  3 – Grave (conséquences légales)<br>
+                  4 – Critique (irréversible / SMETA)
+                </div>
+              </th>
+              <th class="has-tip" style="width:100px;text-align:center;background:#f5f3ff;color:#5b21b6;border-right:3px solid #38bdf8;border-top:1px solid #1e3a5f;">
+                D &nbsp;<span style="font-weight:400;font-size:9px;opacity:.8;">Détectabilité</span>
+                <div class="tip-box" style="left:auto;right:0;transform:none;">
+                  <strong>Détectabilité</strong><br>
+                  1 – Facilement détectable<br>
+                  2 – Détectable (inspection)<br>
+                  3 – Difficile à détecter<br>
+                  4 – Non détectable
+                </div>
+              </th>
             </tr>
           </thead>
           <tbody id="risk-tbody"></tbody>
@@ -962,17 +969,17 @@ function renderTable(overrideData) {
       ${ec('danger', `<span class="cell-text truncate-cell" style="font-size:12px;color:#374151;">${r.danger||'—'}</span><div style="font-size:10px;color:#94a3b8;margin-top:2px;">${r.cat||''}</div>`)}
       ${ec('risk',   `<span class="cell-text truncate-cell" style="font-size:12px;font-weight:600;color:#1e293b;">${r.risk||'—'}</span>`)}
       ${ec('pop',    `<span class="cell-text" style="font-size:11px;color:#64748b;">${r.pop||'—'}</span>`)}
-      <td style="text-align:center;padding:6px 4px;">
+      <td style="text-align:center;padding:6px 4px;background:#fafcff;border-left:3px solid #38bdf8;">
         <div style="display:flex;gap:3px;justify-content:center;">
           ${[1,2,3,4].map(v=>`<span class="s-tile s-p${r.p===v?' active':''}" onclick="updateScore('${r.id}','p',${v})" id="p${v}-${r.id}" title="${SCALE.p[v-1]?.label||v}">${v}</span>`).join('')}
         </div>
       </td>
-      <td style="text-align:center;padding:6px 4px;">
+      <td style="text-align:center;padding:6px 4px;background:#fffef5;border-left:1px solid #fde68a;border-right:1px solid #fde68a;">
         <div style="display:flex;gap:3px;justify-content:center;">
           ${[1,2,3,4].map(v=>`<span class="s-tile s-g${r.g===v?' active':''}" onclick="updateScore('${r.id}','g',${v})" id="g${v}-${r.id}" title="${SCALE.g[v-1]?.label||v}">${v}</span>`).join('')}
         </div>
       </td>
-      <td style="text-align:center;padding:6px 4px;">
+      <td style="text-align:center;padding:6px 4px;background:#fdfcff;border-right:3px solid #38bdf8;">
         <div style="display:flex;gap:3px;justify-content:center;">
           ${[1,2,3,4].map(v=>`<span class="s-tile s-d${r.d===v?' active':''}" onclick="updateScore('${r.id}','d',${v})" id="d${v}-${r.id}" title="${SCALE.d[v-1]?.label||v}">${v}</span>`).join('')}
         </div>
