@@ -150,15 +150,12 @@ select.form-input { cursor: pointer; }
 .score-cell { cursor: pointer; transition: background .1s; }
 .score-cell:hover { background: #f1f5f9 !important; }
 
-/* ── Score picker ── */
-#score-picker { position: fixed; background: #0f172a; border-radius: 12px; padding: 8px 10px; display: none; gap: 6px; z-index: 600; box-shadow: 0 12px 32px rgba(0,0,0,.4); border: 1px solid #334155; flex-direction: column; }
-#score-picker .sp-row { display: flex; gap: 6px; }
-.sp-btn { width: 38px; height: 38px; border-radius: 8px; border: 1.5px solid #334155; background: #1e293b; color: #94a3b8; font-weight: 700; font-size: 15px; cursor: pointer; transition: all .15s; }
-.sp-btn:hover { border-color: #64748b; color: #e2e8f0; }
-.sp-btn.sp-active-p { background: #eff6ff; border-color: #3b82f6; color: #1d4ed8; }
-.sp-btn.sp-active-g { background: #fffbeb; border-color: #f59e0b; color: #92400e; }
-.sp-btn.sp-active-d { background: #f5f3ff; border-color: #8b5cf6; color: #5b21b6; }
-#sp-hint { font-size: 10px; color: #64748b; padding: 2px 2px 0; text-align: center; }
+/* ── Score tiles (inline dans le tableau) ── */
+.s-tile { width: 22px; height: 22px; border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; cursor: pointer; background: #f1f5f9; color: #94a3b8; border: 1.5px solid transparent; transition: all .12s; user-select: none; }
+.s-tile:hover { transform: scale(1.18); background: #e2e8f0; color: #475569; }
+.s-p.active { background: #eff6ff; color: #1d4ed8; border-color: #93c5fd; }
+.s-g.active { background: #fffbeb; color: #92400e; border-color: #fcd34d; }
+.s-d.active { background: #f5f3ff; color: #5b21b6; border-color: #c4b5fd; }
 </style>
 </head>
 <body>
@@ -338,7 +335,7 @@ select.form-input { cursor: pointer; }
               <th style="min-width:160px;">Danger</th>
               <th style="min-width:180px;">Risque identifié</th>
               <th style="min-width:110px;">Population</th>
-              <th class="has-tip" style="width:44px;text-align:center;">
+              <th class="has-tip" style="width:100px;text-align:center;">
                 P
                 <div class="tip-box">
                   <strong>Probabilité d'apparition</strong><br>
@@ -348,7 +345,7 @@ select.form-input { cursor: pointer; }
                   4 – Fréquent (&gt;1×/an)
                 </div>
               </th>
-              <th class="has-tip" style="width:44px;text-align:center;">
+              <th class="has-tip" style="width:100px;text-align:center;">
                 G
                 <div class="tip-box">
                   <strong>Gravité des conséquences</strong><br>
@@ -358,7 +355,7 @@ select.form-input { cursor: pointer; }
                   4 – Critique (irréversible / SMETA)
                 </div>
               </th>
-              <th class="has-tip" style="width:44px;text-align:center;">
+              <th class="has-tip" style="width:100px;text-align:center;">
                 D
                 <div class="tip-box">
                   <strong>Détectabilité</strong><br>
@@ -965,14 +962,20 @@ function renderTable(overrideData) {
       ${ec('danger', `<span class="cell-text truncate-cell" style="font-size:12px;color:#374151;">${r.danger||'—'}</span><div style="font-size:10px;color:#94a3b8;margin-top:2px;">${r.cat||''}</div>`)}
       ${ec('risk',   `<span class="cell-text truncate-cell" style="font-size:12px;font-weight:600;color:#1e293b;">${r.risk||'—'}</span>`)}
       ${ec('pop',    `<span class="cell-text" style="font-size:11px;color:#64748b;">${r.pop||'—'}</span>`)}
-      <td class="score-cell" onclick="showScorePicker(event,'${r.id}','p',${r.p})" title="Cliquer pour modifier" style="text-align:center;">
-        <span id="p-${r.id}" class="score-pill" style="background:#eff6ff;color:#1d4ed8;">${r.p||'—'}</span>
+      <td style="text-align:center;padding:6px 4px;">
+        <div style="display:flex;gap:3px;justify-content:center;">
+          ${[1,2,3,4].map(v=>`<span class="s-tile s-p${r.p===v?' active':''}" onclick="updateScore('${r.id}','p',${v})" id="p${v}-${r.id}" title="${SCALE.p[v-1]?.label||v}">${v}</span>`).join('')}
+        </div>
       </td>
-      <td class="score-cell" onclick="showScorePicker(event,'${r.id}','g',${r.g})" title="Cliquer pour modifier" style="text-align:center;">
-        <span id="g-${r.id}" class="score-pill" style="background:#fffbeb;color:#92400e;">${r.g||'—'}</span>
+      <td style="text-align:center;padding:6px 4px;">
+        <div style="display:flex;gap:3px;justify-content:center;">
+          ${[1,2,3,4].map(v=>`<span class="s-tile s-g${r.g===v?' active':''}" onclick="updateScore('${r.id}','g',${v})" id="g${v}-${r.id}" title="${SCALE.g[v-1]?.label||v}">${v}</span>`).join('')}
+        </div>
       </td>
-      <td class="score-cell" onclick="showScorePicker(event,'${r.id}','d',${r.d})" title="Cliquer pour modifier" style="text-align:center;">
-        <span id="d-${r.id}" class="score-pill" style="background:#f5f3ff;color:#5b21b6;">${r.d||'—'}</span>
+      <td style="text-align:center;padding:6px 4px;">
+        <div style="display:flex;gap:3px;justify-content:center;">
+          ${[1,2,3,4].map(v=>`<span class="s-tile s-d${r.d===v?' active':''}" onclick="updateScore('${r.id}','d',${v})" id="d${v}-${r.id}" title="${SCALE.d[v-1]?.label||v}">${v}</span>`).join('')}
+        </div>
       </td>
       <td id="ipr-${r.id}" style="text-align:center;">
         <span class="crit-badge ${cls}" style="font-size:11px;">${lbl.emoji} ${score}</span>
@@ -1528,11 +1531,15 @@ function updateScore(id, type, val) {
   risk[type] = val;
   saveSiteData(state.site, data);
 
-  // Update score pill in DOM
-  const pill = document.getElementById(`${type}-${id}`);
-  if (pill) pill.textContent = val;
+  // Mettre à jour les tuiles actives
+  [1,2,3,4].forEach(v => {
+    const tile = document.getElementById(`${type}${v}-${id}`);
+    if (tile) {
+      tile.className = `s-tile s-${type}${v === val ? ' active' : ''}`;
+    }
+  });
 
-  // Recalculate & update IPR cell
+  // Recalculer et mettre à jour l'IPR instantanément
   const score = ipr(risk.p, risk.g, risk.d);
   const cls   = critClass(score);
   const lbl   = critLabel(score);
