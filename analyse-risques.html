@@ -170,6 +170,11 @@ select.form-input { cursor: pointer; }
 .s-p.active { background: #eff6ff; color: #1d4ed8; border-color: #93c5fd; }
 .s-g.active { background: #fffbeb; color: #92400e; border-color: #fcd34d; }
 .s-d.active { background: #f5f3ff; color: #5b21b6; border-color: #c4b5fd; }
+/* ── Resize colonnes ── */
+.risk-table { table-layout: fixed; }
+.risk-table th { position: relative; }
+.col-rz { position: absolute; right: 0; top: 0; width: 6px; height: 100%; cursor: col-resize; z-index: 2; }
+.col-rz:hover, .col-rz.rz-active { background: rgba(74,222,128,.45); border-radius: 2px; }
 </style>
 </head>
 <body>
@@ -755,49 +760,77 @@ const ENTERPRISE_CATEGORIES = [
 ];
 
 const DEFAULT_SOCIAL_RISKS = [
-  {cat:'Temps de travail',danger:'Pic d\'activité saisonnière',risk:'Heures supplémentaires excessives',pop:'Personnel entrepôt',p:3,g:2,d:2,existing:'Pointage + suivi RH',recommended:'Alerte automatique + validation RH',smeta:'SMETA Pilier 2 — §2.3 Temps de travail',status:'open'},
-  {cat:'Temps de travail',danger:'Planification insuffisante',risk:'Non-respect du repos hebdomadaire',pop:'Tout le personnel',p:2,g:2,d:2,existing:'Suivi des repos',recommended:'Audit mensuel',smeta:'SMETA Pilier 2 — §2.3 Temps de travail',status:'open'},
-  {cat:'Temps de travail',danger:'Surcharge lors des pics d\'activité',risk:'Surcharge de travail en période haute',pop:'Logistique',p:2,g:1,d:2,existing:'Planning hebdomadaire',recommended:'Planification de charge + intérimaires',smeta:'SMETA Pilier 2 — §2.3 Temps de travail',status:'open'},
-  {cat:'Temps de travail',danger:'Organisation travail de nuit',risk:'Impact santé du travail de nuit',pop:'Équipes de nuit',p:3,g:1,d:3,existing:'Organisation des plannings',recommended:'Suivi médical renforcé',smeta:'SMETA Pilier 2 — §2.3 Temps de travail',status:'open'},
-  {cat:'Temps de travail',danger:'Travail isolé en zone froide',risk:'Absence de secours en cas de malaise',pop:'Agents frigorifiques',p:2,g:3,d:3,existing:'Non documenté',recommended:'Protocole travailleur isolé (PTI)',smeta:'SMETA Pilier 1 — Santé & Sécurité',status:'open'},
-  {cat:'Rémunération',danger:'Mauvaise application du barème légal',risk:'Non-conformité au SMIG',pop:'Tout le personnel',p:2,g:3,d:2,existing:'Procédure paie',recommended:'Audit trimestriel de la paie',smeta:'SMETA Pilier 2 — §2.4 Rémunération',status:'open'},
-  {cat:'Rémunération',danger:'Erreur de saisie paie',risk:'Calcul incorrect des heures supplémentaires',pop:'Personnel horaire',p:1,g:2,d:2,existing:'Suivi des heures',recommended:'Double validation en paie',smeta:'SMETA Pilier 2 — §2.4 Rémunération',status:'open'},
-  {cat:'Rémunération',danger:'Dysfonctionnement processus interne',risk:'Retards de paiement des salaires',pop:'Tout le personnel',p:1,g:2,d:2,existing:'KPI suivi paiements',recommended:'Maintien du suivi KPI',smeta:'SMETA Pilier 2 — §2.4 Rémunération',status:'open'},
-  {cat:'Droits humains',danger:'Pratiques de rétention de documents',risk:'Rétention de documents d\'identité',pop:'Tout le personnel',p:1,g:3,d:3,existing:'Sensibilisation RH',recommended:'Vérification des dossiers RH',smeta:'SMETA Pilier 2 — §2.2 Travail forcé',status:'open'},
-  {cat:'Droits humains',danger:'Contrats ambigus ou pression managériale',risk:'Travail non volontaire',pop:'Tout le personnel',p:1,g:4,d:2,existing:'Système de plainte',recommended:'Audit social interne',smeta:'SMETA Pilier 2 — §2.2 Travail forcé',status:'open'},
-  {cat:'Droits humains',danger:'Pression pour effectuer des heures sup',risk:'Coercition managériale',pop:'Personnel',p:2,g:2,d:2,existing:'Système de plainte',recommended:'Enquête de satisfaction anonyme',smeta:'SMETA Pilier 2 — §2.2 Travail forcé',status:'open'},
-  {cat:'Discrimination & Harcèlement',danger:'Comportement managérial inapproprié',risk:'Harcèlement moral',pop:'Tout le personnel',p:2,g:3,d:2,existing:'Procédure de plainte',recommended:'Canal anonyme + procédure d\'enquête',smeta:'SMETA Pilier 2 — §2.6 Discrimination',status:'open'},
-  {cat:'Discrimination & Harcèlement',danger:'Biais dans les critères de sélection',risk:'Discrimination au recrutement',pop:'Candidats',p:2,g:2,d:2,existing:'Procédure de recrutement',recommended:'Audit des dossiers de recrutement',smeta:'SMETA Pilier 2 — §2.6 Discrimination',status:'open'},
-  {cat:'Discrimination & Harcèlement',danger:'Inégalité de traitement entre salariés',risk:'Traitement inégal',pop:'Salariés',p:3,g:2,d:2,existing:'Formation interne',recommended:'Suivi d\'indicateurs RH',smeta:'SMETA Pilier 2 — §2.6 Discrimination',status:'open'},
-  {cat:"Liberté d'association",danger:'Absence d\'élections du personnel',risk:'Absence de représentants du personnel',pop:'Salariés',p:1,g:2,d:2,existing:'Réunions existantes',recommended:'Formalisation des élections',smeta:"SMETA Pilier 2 — §2.5 Liberté d'association",status:'open'},
-  {cat:"Liberté d'association",danger:'Dialogue social peu structuré',risk:'Dialogue social inefficace',pop:'Représentants',p:2,g:2,d:2,existing:'Réunions mensuelles',recommended:'PV + suivi des actions',smeta:"SMETA Pilier 2 — §2.5 Liberté d'association",status:'open'},
-  {cat:'Santé & Sécurité',danger:'Opération chariot élévateur',risk:'Accident chariot élévateur',pop:'Caristes',p:3,g:3,d:2,existing:'Formation + maintenance',recommended:'Audit sécurité mensuel',smeta:'SMETA Pilier 1 — Santé & Sécurité',status:'open'},
-  {cat:'Santé & Sécurité',danger:'Manutention manuelle répétitive',risk:'TMS / Blessures manutention',pop:'Personnel logistique',p:4,g:2,d:2,existing:'Formation gestes & postures',recommended:'Ergonomie + rotation de postes',smeta:'SMETA Pilier 1 — Santé & Sécurité',status:'open'},
-  {cat:'Santé & Sécurité',danger:'Exposition produits d\'entretien',risk:'Intoxication / Brûlures chimiques',pop:'Maintenance',p:2,g:2,d:2,existing:'Procédures chimiques',recommended:'Fiches de sécurité + formation',smeta:'SMETA Pilier 1 — Santé & Sécurité',status:'open'},
-  {cat:'Sous-traitance',danger:'Sous-traitant non audité socialement',risk:'Sous-traitant non conforme socialement',pop:'Agents externes',p:3,g:4,d:2,existing:'Système de contrôle',recommended:'Audit fournisseur annuel',smeta:'SMETA Pilier 2 — §2.8 Sous-traitance',status:'open'},
-  {cat:'Sous-traitance',danger:'Intérimaires non déclarés',risk:'Personnel non déclaré',pop:'Agents externes',p:2,g:4,d:2,existing:'Vérification entrées',recommended:'Badgeage + contrôle d\'accès',smeta:'SMETA Pilier 2 — §2.8 Sous-traitance',status:'open'},
-  {cat:'Sous-traitance',danger:'Mauvaises pratiques salariales fournisseur',risk:'Non-conformité salariale fournisseur',pop:'Personnel fournisseur',p:2,g:3,d:3,existing:'Engagement contractuel',recommended:'Audit paie fournisseur',smeta:'SMETA Pilier 2 — §2.8 Sous-traitance',status:'open'},
-  {cat:'Mécanisme de plainte',danger:'Manque de confiance dans le système',risk:'Sous-utilisation du canal de plainte',pop:'Tout le personnel',p:2,g:2,d:3,existing:'Canal anonyme existant',recommended:'Campagne sensibilisation + KPI traitement',smeta:'SMETA Pilier 2 — §2.7 Pratiques disciplinaires',status:'open'},
-  {cat:'Mécanisme de plainte',danger:'Commission non réactive',risk:'Non-traitement des plaintes dans les délais',pop:'Plaignants',p:2,g:3,d:2,existing:'Processus commission',recommended:'KPI délai de traitement des plaintes',smeta:'SMETA Pilier 2 — §2.7 Pratiques disciplinaires',status:'open'}
+  // Temps de travail (source: Analyse de risk autres volets, SMETA)
+  {cat:'Temps de travail',danger:'Pic d\'activité / planification insuffisante',risk:'Heures supplémentaires excessives',pop:'Magasiniers',p:3,g:4,d:2,existing:'Pointage + suivi heures',recommended:'Alerte automatique + validation RH',smeta:'SMETA Pilier 2 — §2.3 Temps de travail',status:'open'},
+  {cat:'Temps de travail',danger:'Organisation des repos',risk:'Non-respect du repos hebdomadaire',pop:'Tout le personnel',p:2,g:4,d:2,existing:'Suivi repos',recommended:'Audit mensuel',smeta:'SMETA Pilier 2 — §2.3 Temps de travail',status:'open'},
+  {cat:'Temps de travail',danger:'Pics d\'activité logistique',risk:'Surcharge de travail',pop:'Logistique',p:4,g:3,d:2,existing:'Planning',recommended:'Planification charge + renfort intérim',smeta:'SMETA Pilier 2 — §2.3 Temps de travail',status:'open'},
+  {cat:'Temps de travail',danger:'Organisation travail de nuit',risk:'Travail de nuit — impact santé',pop:'Équipes de nuit',p:3,g:3,d:2,existing:'Organisation horaire',recommended:'Suivi médical renforcé',smeta:'SMETA Pilier 2 — §2.3 Temps de travail',status:'open'},
+  // Rémunération
+  {cat:'Rémunération',danger:'Application du barème légal',risk:'Non-respect du SMIG',pop:'Tout le personnel',p:2,g:4,d:2,existing:'Procédure paie',recommended:'Audit paie trimestriel',smeta:'SMETA Pilier 2 — §2.4 Rémunération',status:'open'},
+  {cat:'Rémunération',danger:'Calcul heures supplémentaires',risk:'Erreur de calcul des heures supplémentaires',pop:'Magasiniers',p:3,g:4,d:2,existing:'Suivi heures',recommended:'Double validation paie',smeta:'SMETA Pilier 2 — §2.4 Rémunération',status:'open'},
+  {cat:'Rémunération',danger:'Processus de paie',risk:'Retard de paiement salaire',pop:'Tout le personnel',p:2,g:4,d:2,existing:'Process interne',recommended:'Suivi KPI paiement',smeta:'SMETA Pilier 2 — §2.4 Rémunération',status:'open'},
+  // Droits humains
+  {cat:'Droits humains',danger:'Pratiques de rétention de documents',risk:'Rétention de documents (CIN, contrat)',pop:'Tout le personnel',p:1,g:4,d:2,existing:'Sensibilisation',recommended:'Vérification dossiers RH',smeta:'SMETA Pilier 2 — §2.2 Travail forcé',status:'open'},
+  {cat:'Droits humains',danger:'Contrats ou pression managériale',risk:'Travail non volontaire',pop:'Tout le personnel',p:1,g:4,d:2,existing:'Système plainte',recommended:'Audit social interne',smeta:'SMETA Pilier 2 — §2.2 Travail forcé',status:'open'},
+  {cat:'Droits humains',danger:'Pression managériale sur heures sup',risk:'Pression pour heures supplémentaires',pop:'Magasiniers',p:3,g:4,d:2,existing:'Représentants personnel',recommended:'Enquête satisfaction anonyme',smeta:'SMETA Pilier 2 — §2.2 Travail forcé',status:'open'},
+  // Discrimination & Harcèlement
+  {cat:'Discrimination & Harcèlement',danger:'Comportement managérial inapproprié',risk:'Harcèlement moral',pop:'Tout le personnel',p:2,g:4,d:2,existing:'Procédure plainte',recommended:'Canal anonyme + enquête',smeta:'SMETA Pilier 2 — §2.6 Discrimination',status:'open'},
+  {cat:'Discrimination & Harcèlement',danger:'Biais de recrutement',risk:'Discrimination au recrutement',pop:'Candidats',p:2,g:4,d:2,existing:'Procédure recrutement',recommended:'Audit dossiers',smeta:'SMETA Pilier 2 — §2.6 Discrimination',status:'open'},
+  {cat:'Discrimination & Harcèlement',danger:'Traitement inégal entre salariés',risk:'Inégalité de traitement',pop:'Employés',p:3,g:4,d:2,existing:'Formation interne',recommended:'Indicateur RH',smeta:'SMETA Pilier 2 — §2.6 Discrimination',status:'open'},
+  // Liberté d'association
+  {cat:"Liberté d'association",danger:'Absence d\'élections du personnel',risk:'Absence de représentants du personnel',pop:'Employés',p:2,g:4,d:2,existing:'Réunions existantes',recommended:'Formaliser élections',smeta:"SMETA Pilier 2 — §2.5 Liberté d'association",status:'open'},
+  {cat:"Liberté d'association",danger:'Dialogue social peu structuré',risk:'Dialogue social inefficace',pop:'Tout le personnel',p:3,g:3,d:2,existing:'Réunions mensuelles',recommended:'PV + suivi actions',smeta:"SMETA Pilier 2 — §2.5 Liberté d'association",status:'open'},
+  // Santé & Sécurité
+  {cat:'Santé & Sécurité',danger:'Opération chariot élévateur',risk:'Accident chariot élévateur',pop:'Caristes',p:3,g:4,d:2,existing:'Formation + maintenance',recommended:'Audit sécurité mensuel',smeta:'SMETA Pilier 1 — Santé & Sécurité',status:'open'},
+  {cat:'Santé & Sécurité',danger:'Manutention manuelle répétitive',risk:'Manutention / TMS',pop:'Magasiniers',p:4,g:4,d:2,existing:'Formation',recommended:'Ergonomie + rotation de postes',smeta:'SMETA Pilier 1 — Santé & Sécurité',status:'open'},
+  {cat:'Santé & Sécurité',danger:'Exposition produits chimiques',risk:'Exposition produits chimiques',pop:'Maintenance',p:2,g:4,d:2,existing:'Procédures chimiques',recommended:'Fiche sécurité produits + formation',smeta:'SMETA Pilier 1 — Santé & Sécurité',status:'open'},
+  // Sous-traitance
+  {cat:'Sous-traitance',danger:'Sous-traitant non audité socialement',risk:'Sous-traitant non conforme socialement',pop:'Agents externes',p:4,g:4,d:2,existing:'Contrôle existant',recommended:'Audit fournisseurs annuel',smeta:'SMETA Pilier 2 — §2.8 Sous-traitance',status:'open'},
+  {cat:'Sous-traitance',danger:'Intérimaires non déclarés',risk:'Personnel non déclaré',pop:'Prestataires',p:3,g:4,d:2,existing:'Vérification',recommended:'Badge + contrôle accès',smeta:'SMETA Pilier 2 — §2.8 Sous-traitance',status:'open'},
+  {cat:'Sous-traitance',danger:'Pratiques salariales fournisseur',risk:'Non-respect salaire chez sous-traitant',pop:'Externes',p:3,g:4,d:2,existing:'Engagement contractuel',recommended:'Audit paie fournisseur',smeta:'SMETA Pilier 2 — §2.8 Sous-traitance',status:'open'},
+  // Mécanisme de plainte
+  {cat:'Mécanisme de plainte',danger:'Confiance dans le système de plaintes',risk:'Absence de confiance dans le système',pop:'Tout le personnel',p:3,g:4,d:2,existing:'Procédure plainte',recommended:'Canal anonyme',smeta:'SMETA Pilier 2 — §2.7 Pratiques disciplinaires',status:'open'},
+  {cat:'Mécanisme de plainte',danger:'Réactivité de la commission',risk:'Non-traitement des plaintes',pop:'Tout le personnel',p:2,g:4,d:2,existing:'Commission',recommended:'KPI traitement plaintes',smeta:'SMETA Pilier 2 — §2.7 Pratiques disciplinaires',status:'open'}
 ];
 
 const DEFAULT_ENTERPRISE_RISKS = [
-  {cat:'Incendie & Explosion',danger:'Zone stockage produits inflammables',risk:'Incendie en zone de stockage',pop:'Tout le personnel',p:2,g:4,d:2,existing:'Installation CO₂ automatique',recommended:'Contrôle accès extincteurs',smeta:'',status:'open'},
-  {cat:'Incendie & Explosion',danger:'Système frigorifique ammoniac',risk:'Fuite d\'ammoniac',pop:'Personnel maintenance',p:1,g:4,d:2,existing:'Procédures d\'urgence',recommended:'Formation annuelle + exercices évacuation',smeta:'',status:'open'},
-  {cat:'Produits chimiques',danger:'Manipulation produits d\'entretien',risk:'Intoxication / Brûlures chimiques',pop:'Personnel nettoyage',p:2,g:2,d:2,existing:'Procédures chimiques',recommended:'FDS accessibles + formation',smeta:'',status:'open'},
-  {cat:'Circulation & Accès',danger:'Couloirs entrepôt encombrés',risk:'Accident de circulation piéton/engin',pop:'Tout le personnel',p:2,g:2,d:2,existing:'Marquage voies piétonnes',recommended:'Audit sécurité mensuel',smeta:'',status:'open'},
-  {cat:'Stockage en hauteur',danger:'Palettes mal arrimées',risk:'Chute de charges depuis la hauteur',pop:'Personnel entrepôt',p:2,g:3,d:2,existing:'Contrôle stabilité + filmage',recommended:'Vérification contrôle entrepôt',smeta:'',status:'open'},
-  {cat:'Stockage en hauteur',danger:'Rayonnage vétuste ou surchargé',risk:'Effondrement de rayonnage',pop:'Personnel entrepôt',p:1,g:4,d:2,existing:'Inspection régulière',recommended:'Audit technique annuel',smeta:'',status:'open'},
-  {cat:'Équipements de manutention',danger:'Utilisation engins de manutention',risk:'Accident / Blessure engin',pop:'Caristes',p:2,g:3,d:2,existing:'Formation + habilitation',recommended:'Recyclage annuel',smeta:'',status:'open'},
-  {cat:'Électrique & Infrastructure',danger:'Installations électriques vieillissantes',risk:'Court-circuit / Incendie électrique',pop:'Tout le personnel',p:2,g:3,d:2,existing:'Contrôle périodique',recommended:'Audit électrique annuel',smeta:'',status:'open'},
-  {cat:'Électrique & Infrastructure',danger:'Coupure de courant',risk:'Rupture de chaîne du froid',pop:'Produits stockés',p:2,g:3,d:1,existing:'Groupe électrogène',recommended:'Test mensuel groupe électrogène',smeta:'',status:'open'},
-  {cat:'Électrique & Infrastructure',danger:'Événement climatique extrême',risk:'Inondation / Dégâts des eaux',pop:'Matériel et stocks',p:1,g:3,d:2,existing:'Assurance',recommended:'Plan de continuité',smeta:'',status:'open'},
-  {cat:'IT & Continuité',danger:'Panne serveur critique',risk:'Défaillance matérielle critique',pop:'Opérations',p:2,g:3,d:2,existing:'Plan de sauvegarde hardware',recommended:'Test de restauration trimestriel',smeta:'',status:'open'},
-  {cat:'IT & Continuité',danger:'Perte de connectivité réseau',risk:'Perte des services réseau',pop:'Opérations',p:2,g:2,d:2,existing:'Plan de secours réseau',recommended:'Double opérateur télécom',smeta:'',status:'open'},
-  {cat:'IT & Continuité',danger:'Cyberattaque / Erreur humaine',risk:'Perte ou corruption de données',pop:'Direction & IT',p:2,g:3,d:2,existing:'HDS + procédures IT',recommended:'Tests de restauration + sensibilisation',smeta:'',status:'open'},
-  {cat:'Risques externes',danger:'Contexte pandémique',risk:'Épidémie / Pandémie',pop:'Tout le personnel',p:2,g:3,d:1,existing:'Gestes barrières + référents',recommended:'Plan de continuité pandémique',smeta:'',status:'open'},
-  {cat:'Risques externes',danger:'Contexte social tendu',risk:'Grève / Arrêt de travail',pop:'Opérations',p:2,g:2,d:2,existing:'Plan de contingence',recommended:'Dialogue social renforcé',smeta:'',status:'open'},
-  {cat:'Risques externes',danger:'Instabilité sécuritaire',risk:'Terrorisme / Acte malveillant',pop:'Site entier',p:1,g:4,d:2,existing:'Contrôle d\'accès',recommended:'Plan sûreté + formation sécurité',smeta:'',status:'open'}
+  // Incendie & Explosion (source: Analyse Risk Sociale)
+  {cat:'Incendie & Explosion',danger:'Zone stockage produits inflammables / chimiques',risk:'Feu / Explosion en zone de stockage',pop:'Tout le personnel',p:3,g:3,d:2,existing:'Extincteurs (consignes spécialiste incendie), zone chimiques isolée + accès formés, détecteurs fumée, douches oculaires, secouristes formés, lumières secours, tests évacuation',recommended:'Contrôle accès extincteurs + conformité lumières de secours',smeta:'',status:'open'},
+  {cat:'Incendie & Explosion',danger:'Réseau ammoniac système frigorifique',risk:'Fuite d\'ammoniac',pop:'Personnel maintenance',p:4,g:4,d:2,existing:'Détecteur ammoniac entrepôt, douches oculaires, plan évacuation, secouristes formés, trousse 1ers soins, infirmière sur site, contrôle préventif installations service technique',recommended:'Installation solution CO₂ automatique',smeta:'',status:'open'},
+  {cat:'Incendie & Explosion',danger:'Départ incendie toutes zones',risk:'Départ incendie',pop:'Tout le personnel',p:4,g:4,d:2,existing:'Extincteurs toutes zones à risque, équipe moniteurs + secours formée, contrôle conformité extincteurs organisme externe',recommended:'Contrôle accès extincteurs',smeta:'',status:'open'},
+  {cat:'Incendie & Explosion',danger:'Installations électriques entrepôt',risk:'Incendie électrique',pop:'Tout le personnel',p:4,g:4,d:2,existing:'Contrôle conformité organisme externe, extincteurs proximité zones à risque, personnel formé utilisation extincteurs',recommended:'Audit électrique annuel',smeta:'',status:'open'},
+  {cat:'Incendie & Explosion',danger:'Salle de machine produisant le froid',risk:'Incendie salle de machine froid',pop:'Tout le personnel',p:4,g:4,d:2,existing:'Maintenance préventive, contrôle organisme externe',recommended:'Audit technique annuel',smeta:'',status:'open'},
+  // Produits chimiques
+  {cat:'Produits chimiques',danger:'Manipulation produits d\'entretien / chimiques',risk:'Toxicité / Brûlure produits chimiques',pop:'Personnel nettoyage / maintenance',p:3,g:3,d:2,existing:'Zone stockage sécurisée + BP, douches oculaires à proximité, protocole premiers secours (FR/AR) affiché zone OPS',recommended:'Contrôle accès extincteurs',smeta:'',status:'open'},
+  // Circulation & Accès
+  {cat:'Circulation & Accès',danger:'Passages piétons encombrés',risk:'Accident de circulation piéton / engin',pop:'Tout le personnel',p:3,g:2,d:2,existing:'Traçage des passages piétons',recommended:'Respect consignes sécurité + interdiction stockage zones de passage',smeta:'',status:'open'},
+  {cat:'Circulation & Accès',danger:'Camions et/ou remorques mal garés',risk:'Accident camion / remorque',pop:'Personnel quai',p:2,g:2,d:2,existing:'Cales, stationnement en position démarrage avant',recommended:'Affichage consignes de sécurité + sensibilisation',smeta:'',status:'open'},
+  // Stockage en hauteur
+  {cat:'Stockage en hauteur',danger:'Cartons ou palettes stockés en hauteur',risk:'Chute de charges',pop:'Personnel entrepôt',p:2,g:4,d:2,existing:'Contrôle stabilité et filmage palettes mises en stock',recommended:'Formation BP + contrôle conformité responsables zone',smeta:'',status:'open'},
+  {cat:'Stockage en hauteur',danger:'Rayonnage instable ou surchargé',risk:'Effondrement de rayonnage',pop:'Personnel entrepôt',p:1,g:4,d:2,existing:'Affichage poids max par lisse, contrôle rayonnages interne',recommended:'Audit technique annuel',smeta:'',status:'open'},
+  // Équipements de manutention
+  {cat:'Équipements de manutention',danger:'Utilisation engins de manutention',risk:'Accident / Blessure engin',pop:'Caristes',p:3,g:3,d:2,existing:'Limitation vitesse, limitation zone circulation, personnel formé conduite chariots élévateurs',recommended:'Sensibilisation continue + formation conduite engins',smeta:'',status:'open'},
+  {cat:'Équipements de manutention',danger:'Travail en hauteur (nettoyage / inventaire tournant)',risk:'Chute en hauteur',pop:'Personnel',p:3,g:3,d:2,existing:'Cage de sécurité permettant d\'exécuter actions en hauteur',recommended:'Formation BP',smeta:'',status:'open'},
+  {cat:'Équipements de manutention',danger:'Travail en individuel dans la zone surgelée',risk:'Malaise non secouru en zone froide',pop:'Personnel frigorifique',p:4,g:3,d:2,existing:'Affichage consignes sécurité entrée chambre, sensibilisation BP',recommended:'Formation BP + protocole travailleur isolé (PTI)',smeta:'',status:'open'},
+  // Électrique & Infrastructure
+  {cat:'Électrique & Infrastructure',danger:'Coupure d\'électricité réseau',risk:'Coupure d\'électricité',pop:'Opérations',p:3,g:3,d:2,existing:'Groupe électrogène autonomie 3 jours, procédure coupure électricité',recommended:'Test mensuel groupe électrogène',smeta:'',status:'open'},
+  {cat:'Électrique & Infrastructure',danger:'Événement climatique extrême',risk:'Inondation',pop:'Bâtiment / stocks',p:2,g:4,d:2,existing:'Système de drainage des eaux régulièrement entretenu',recommended:'Plan de continuité + assurance',smeta:'',status:'open'},
+  {cat:'Électrique & Infrastructure',danger:'Vieillissement structure bâtiment',risk:'Effondrement bâtiment',pop:'Tout le personnel',p:2,g:3,d:2,existing:'Contrôle structure bâtiment effectué',recommended:'Audit structure régulier',smeta:'',status:'open'},
+  {cat:'Électrique & Infrastructure',danger:'Panne système de refroidissement chambres froides',risk:'Rupture de la chaîne du froid',pop:'Produits stockés',p:3,g:4,d:2,existing:'Maintenance préventive, BPS, contrat prestataire froid spécialisé, déclenchement alarmes froid, audit terrain contrôle givre',recommended:'Audit terrain contrôle présence de givre',smeta:'',status:'open'},
+  // IT & Continuité
+  {cat:'IT & Continuité',danger:'Contexte pandémique',risk:'Pandémie',pop:'Tout le personnel',p:3,g:3,d:2,existing:'Contingency Plan, télétravail, travail en shifts séparés, contrôle accès visiteurs, formation gestes barrière',recommended:'Contrôle référents respect gestes barrières',smeta:'',status:'open'},
+  {cat:'IT & Continuité',danger:'Instabilité sociale externe',risk:'Émeutes',pop:'Site entier',p:2,g:3,d:2,existing:'Contingency Plan',recommended:'Plan sûreté + veille sécuritaire',smeta:'',status:'open'},
+  {cat:'IT & Continuité',danger:'Tensions sociales internes',risk:'Grèves',pop:'Opérations',p:3,g:3,d:2,existing:'Contingency Plan',recommended:'Dialogue social renforcé',smeta:'',status:'open'},
+  {cat:'IT & Continuité',danger:'Application critique',risk:'Application Failure',pop:'Opérations IT',p:1,g:2,d:2,existing:'BackUp Plan Application + Help Desk Service (HDS)',recommended:'Test de restauration trimestriel',smeta:'',status:'open'},
+  {cat:'IT & Continuité',danger:'Connectivité réseau',risk:'Perte des services réseau',pop:'Opérations',p:2,g:3,d:2,existing:'BackUp Network Service',recommended:'Double opérateur télécom',smeta:'',status:'open'},
+  {cat:'IT & Continuité',danger:'Défaillance matérielle serveur',risk:'Défaillance matérielle critique',pop:'IT',p:3,g:3,d:2,existing:'BackUp Plan Hardware',recommended:'Test restauration trimestriel + spare parts',smeta:'',status:'open'},
+  {cat:'IT & Continuité',danger:'Perte télécommunications',risk:'Loss of Telecommunications',pop:'Opérations',p:2,g:3,d:2,existing:'BackUp Tower + ISP Provider',recommended:'Contrat SLA opérateur',smeta:'',status:'open'},
+  {cat:'IT & Continuité',danger:'Erreur / cyberattaque données',risk:'Perte ou corruption de données',pop:'Direction / IT',p:2,g:3,d:2,existing:'BackUp Plan Application + HDS',recommended:'Tests de restauration + sensibilisation cyber',smeta:'',status:'open'},
+  {cat:'IT & Continuité',danger:'Panne électrique générale',risk:'Power Failure',pop:'IT / Opérations',p:1,g:2,d:2,existing:'BackUp Plan Electrical Generator IT + Plant',recommended:'Test mensuel générateur',smeta:'',status:'open'},
+  {cat:'IT & Continuité',danger:'Défaillance UPS / générateur',risk:'UPS / Generator Loss',pop:'IT / Opérations',p:1,g:2,d:2,existing:'BackUp Plan Electrical Generator IT + Plant',recommended:'Maintenance préventive UPS',smeta:'',status:'open'},
+  {cat:'IT & Continuité',danger:'Erreur humaine exploitation IT',risk:'Human Error IT',pop:'IT',p:2,g:2,d:2,existing:'HDS + IT Procedure Déploiement Check',recommended:'Formation et sensibilisation IT',smeta:'',status:'open'},
+  // Risques externes
+  {cat:'Risques externes',danger:'Acte malveillant / attentat',risk:'Terrorisme',pop:'Site entier',p:2,g:4,d:2,existing:'Contrôle accès, vidéosurveillance, scellage camion',recommended:'Plan sûreté + formation sécurité',smeta:'',status:'open'}
 ];
 
 // ─── STATE ───────────────────────────────────────────────
@@ -1053,6 +1086,8 @@ function renderTable(overrideData) {
   document.getElementById('cat-title-text').textContent = state.filterCat === '__all__' ? 'Toutes les catégories' : state.filterCat;
   document.getElementById('cat-title-count').textContent = `${risks.length} risque${risks.length > 1 ? 's' : ''}`;
   document.getElementById('cat-actions').style.display = state.filterCat !== '__all__' ? 'flex' : 'none';
+
+  initColResize();
 }
 
 function updateStats(data) {
@@ -1078,6 +1113,42 @@ function changeSite() {
   state.filterCat = '__all__';
   renderAll();
 }
+
+// ─── RESIZE COLONNES ─────────────────────────────────────
+var _rz = null;
+
+function initColResize() {
+  var ths = document.querySelectorAll('.risk-table thead th');
+  ths.forEach(function(th) {
+    // avoid duplicating handles
+    if (th.querySelector('.col-rz')) return;
+    var handle = document.createElement('div');
+    handle.className = 'col-rz';
+    th.appendChild(handle);
+    handle.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      _rz = { th: th, x: e.clientX, w: th.offsetWidth };
+      handle.classList.add('rz-active');
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    });
+  });
+}
+
+document.addEventListener('mousemove', function(e) {
+  if (!_rz) return;
+  var w = Math.max(40, _rz.w + (e.clientX - _rz.x));
+  _rz.th.style.width = w + 'px';
+  _rz.th.style.minWidth = w + 'px';
+});
+
+document.addEventListener('mouseup', function() {
+  if (!_rz) return;
+  _rz.th.querySelector('.col-rz').classList.remove('rz-active');
+  document.body.style.cursor = '';
+  document.body.style.userSelect = '';
+  _rz = null;
+});
 
 // ─── FILTERS ─────────────────────────────────────────────
 function filterCategory(cat) {
