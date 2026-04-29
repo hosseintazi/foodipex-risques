@@ -16,29 +16,43 @@ body { font-family: 'Inter', sans-serif; background: #f1f5f9; }
 ::-webkit-scrollbar-track { background: #f1f5f9; }
 ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
 
+/* ── Palette vert bouteille ── */
+:root {
+  --vb-deep:   #0a2118;   /* fond très sombre */
+  --vb-dark:   #112d1e;   /* sidebar / header */
+  --vb-mid:    #174d30;   /* bordures, séparateurs */
+  --vb-brand:  #1a6b3c;   /* éléments de marque */
+  --vb-action: #166534;   /* boutons primaires */
+  --vb-hover:  #14532d;   /* hover boutons */
+  --vb-accent: #4ade80;   /* accents actifs */
+  --vb-soft:   #86efac;   /* texte secondaire sur fond sombre */
+}
+
 /* ── Layout ── */
 #app { display: grid; grid-template-rows: auto 1fr; height: 100vh; overflow: hidden; }
 #body  { display: grid; grid-template-columns: 260px 1fr; overflow: hidden; }
-#sidebar { background: #0f172a; overflow-y: auto; display: flex; flex-direction: column; }
+#sidebar { background: var(--vb-dark); overflow-y: auto; display: flex; flex-direction: column; }
 #main { overflow-y: auto; display: flex; flex-direction: column; }
 
 /* ── Header ── */
-#header { background: #0f172a; border-bottom: 1px solid #1e293b; padding: 0 20px; }
-.cartouche-wrap { border: 1px solid #334155; display: grid; grid-template-columns: 160px 1fr 180px; }
-.cartouche-cell { border-right: 1px solid #334155; padding: 4px 10px; color: #e2e8f0; font-size: 11px; display: flex; align-items: center; }
-.cartouche-cell:last-child { border-right: none; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 1px; }
-.cartouche-cell input { background: transparent; border: none; outline: none; color: #e2e8f0; font-size: 11px; width: 100%; font-family: inherit; }
-.cartouche-cell input:focus { background: rgba(255,255,255,0.05); border-radius: 2px; }
-.cartouche-title { color: #fff; font-weight: 700; font-size: 12px; letter-spacing: .5px; text-align: center; justify-content: center; }
+#header { background: var(--vb-deep); border-bottom: 2px solid var(--vb-mid); padding: 0 20px; }
+.cartouche-wrap { border: 1.5px solid var(--vb-mid); display: grid; grid-template-columns: 170px 1fr 200px; border-radius: 6px; overflow: hidden; }
+.cartouche-cell { border-right: 1px solid var(--vb-mid); padding: 6px 12px; color: #d1fae5; font-size: 11px; display: flex; align-items: center; }
+.cartouche-cell:last-child { border-right: none; display: flex; flex-direction: column; align-items: flex-stretch; justify-content: stretch; gap: 0; padding: 0; }
+.cartouche-cell input { background: transparent; border: none; outline: none; color: #d1fae5; font-size: 11px; width: 100%; font-family: inherit; }
+.cartouche-cell input:focus { background: rgba(255,255,255,0.04); border-radius: 2px; }
+.cartouche-title { color: #fff; font-weight: 700; font-size: 11px; letter-spacing: .3px; text-align: center; justify-content: center; background: var(--vb-brand); }
+[contenteditable] { outline: none; }
+[contenteditable]:focus { background: rgba(255,255,255,.05); border-radius: 2px; }
 
 /* ── Sidebar ── */
-.tab-btn { padding: 10px 16px; font-size: 12px; font-weight: 600; color: #64748b; cursor: pointer; border-bottom: 2px solid transparent; transition: all .15s; display: flex; align-items: center; gap: 7px; white-space: nowrap; }
-.tab-btn.active { color: #38bdf8; border-bottom-color: #38bdf8; }
-.cat-item { padding: 8px 16px; font-size: 12px; color: #94a3b8; cursor: pointer; display: flex; align-items: center; justify-content: space-between; border-left: 3px solid transparent; transition: all .15s; }
-.cat-item:hover { background: rgba(255,255,255,.05); color: #e2e8f0; }
-.cat-item.active { background: rgba(56,189,248,.08); border-left-color: #38bdf8; color: #38bdf8; }
-.cat-badge { background: #1e293b; color: #64748b; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; min-width: 22px; text-align: center; }
-.cat-item.active .cat-badge { background: rgba(56,189,248,.15); color: #38bdf8; }
+.tab-btn { padding: 10px 16px; font-size: 12px; font-weight: 600; color: #6b8f78; cursor: pointer; border-bottom: 2px solid transparent; transition: all .15s; display: flex; align-items: center; gap: 7px; white-space: nowrap; }
+.tab-btn.active { color: var(--vb-accent); border-bottom-color: var(--vb-accent); }
+.cat-item { padding: 8px 16px; font-size: 12px; color: #7aaa8a; cursor: pointer; display: flex; align-items: center; justify-content: space-between; border-left: 3px solid transparent; transition: all .15s; }
+.cat-item:hover { background: rgba(255,255,255,.04); color: #d1fae5; }
+.cat-item.active { background: rgba(74,222,128,.08); border-left-color: var(--vb-accent); color: var(--vb-accent); }
+.cat-badge { background: var(--vb-mid); color: #6b8f78; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; min-width: 22px; text-align: center; }
+.cat-item.active .cat-badge { background: rgba(74,222,128,.15); color: var(--vb-accent); }
 
 /* ── Risk table ── */
 .risk-table { width: 100%; border-collapse: collapse; font-size: 12px; }
@@ -64,8 +78,8 @@ body { font-family: 'Inter', sans-serif; background: #f1f5f9; }
 
 /* ── Buttons ── */
 .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s; border: none; outline: none; }
-.btn-primary { background: #2563eb; color: #fff; }
-.btn-primary:hover { background: #1d4ed8; }
+.btn-primary { background: var(--vb-action); color: #fff; }
+.btn-primary:hover { background: var(--vb-hover); }
 .btn-outline { background: transparent; border: 1px solid #e2e8f0; color: #475569; }
 .btn-outline:hover { background: #f8fafc; border-color: #cbd5e1; }
 .btn-ghost { background: transparent; color: #64748b; padding: 5px 8px; }
@@ -92,9 +106,9 @@ body { font-family: 'Inter', sans-serif; background: #f1f5f9; }
 
 /* ── Tooltip ── */
 .has-tip { position: relative; }
-.tip-box { visibility: hidden; opacity: 0; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: #0f172a; color: #e2e8f0; border-radius: 8px; padding: 10px 12px; font-size: 11px; line-height: 1.6; width: 240px; z-index: 200; box-shadow: 0 8px 24px rgba(0,0,0,.3); pointer-events: none; transition: opacity .15s; }
+.tip-box { visibility: hidden; opacity: 0; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: var(--vb-deep); color: #d1fae5; border: 1px solid var(--vb-mid); border-radius: 8px; padding: 10px 12px; font-size: 11px; line-height: 1.6; width: 240px; z-index: 200; box-shadow: 0 8px 24px rgba(0,0,0,.3); pointer-events: none; transition: opacity .15s; }
 .has-tip:hover .tip-box { visibility: visible; opacity: 1; }
-.tip-box::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: #0f172a; }
+.tip-box::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: var(--vb-deep); }
 
 /* ── Crit live preview ── */
 #crit-preview { transition: all .2s; }
@@ -104,7 +118,7 @@ body { font-family: 'Inter', sans-serif; background: #f1f5f9; }
 
 /* ── Toast ── */
 #toast { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
-.toast-item { background: #0f172a; color: #e2e8f0; padding: 12px 18px; border-radius: 10px; font-size: 13px; font-weight: 500; box-shadow: 0 8px 24px rgba(0,0,0,.2); animation: slideUp .25s ease; display: flex; align-items: center; gap: 8px; }
+.toast-item { background: var(--vb-dark); border: 1px solid var(--vb-mid); color: #d1fae5; padding: 12px 18px; border-radius: 10px; font-size: 13px; font-weight: 500; box-shadow: 0 8px 24px rgba(0,0,0,.2); animation: slideUp .25s ease; display: flex; align-items: center; gap: 8px; }
 @keyframes slideUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
 
 /* ── Search ── */
@@ -130,7 +144,7 @@ body { font-family: 'Inter', sans-serif; background: #f1f5f9; }
 .ver-badge { background: rgba(56,189,248,.12); color: #38bdf8; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; }
 
 /* ── Separator ── */
-.sidebar-sep { height: 1px; background: #1e293b; margin: 8px 0; }
+.sidebar-sep { height: 1px; background: var(--vb-mid); margin: 8px 0; }
 
 /* ── Form label ── */
 .form-label { font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
@@ -164,73 +178,66 @@ select.form-input { cursor: pointer; }
 
   <!-- ═══════════════════════ HEADER ═══════════════════════ -->
   <div id="header" class="no-print">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0 8px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0 8px;gap:16px;">
 
-      <!-- Logo + titre -->
-      <div style="display:flex;align-items:center;gap:12px;">
-        <div style="background:#2563eb;color:#fff;font-weight:800;font-size:14px;padding:6px 12px;border-radius:8px;letter-spacing:.5px;">FX</div>
+      <!-- Logo -->
+      <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
+        <div style="background:var(--vb-brand);color:#fff;font-weight:800;font-size:15px;padding:8px 13px;border-radius:8px;letter-spacing:.5px;line-height:1;">FX</div>
         <div>
-          <div style="color:#fff;font-weight:700;font-size:14px;line-height:1;">FOODIPEX</div>
-          <div style="color:#64748b;font-size:10px;font-weight:500;">Système de Management des Risques</div>
+          <div style="color:#d1fae5;font-weight:800;font-size:15px;line-height:1.1;letter-spacing:.3px;">FOODIPEX</div>
+          <div style="color:var(--vb-soft);font-size:10px;font-weight:500;margin-top:2px;text-transform:uppercase;letter-spacing:.5px;">Management des Risques</div>
         </div>
       </div>
 
-      <!-- Cartouche -->
-      <div class="cartouche-wrap" style="min-width:540px;">
-        <div class="cartouche-cell">
-          <input id="cart-company" value="FOODIPEX" title="Société" onchange="saveCartouche()">
-        </div>
-        <div class="cartouche-cell cartouche-title">
-          <input id="cart-title" value="ANALYSE DES RISQUES D'ENTREPRISE" title="Titre du document" style="text-align:center;font-weight:700;font-size:11px;letter-spacing:.5px;" onchange="saveCartouche()">
-        </div>
-        <div class="cartouche-cell" style="gap:3px;">
-          <div style="display:flex;align-items:center;gap:4px;width:100%;border-bottom:1px solid #334155;padding-bottom:3px;">
-            <span style="color:#64748b;font-size:10px;white-space:nowrap;">Réf :</span>
-            <input id="cart-ref" value="AUT_RH-22/03" style="flex:1;" onchange="saveCartouche()">
-          </div>
-          <div style="display:flex;align-items:center;gap:4px;width:100%;border-bottom:1px solid #334155;padding-bottom:3px;">
-            <span style="color:#64748b;font-size:10px;white-space:nowrap;">Version :</span>
-            <input id="cart-version" value="00" style="width:40px;" onchange="saveCartouche()">
-          </div>
-          <div style="display:flex;align-items:center;gap:4px;width:100%;">
-            <span style="color:#64748b;font-size:10px;white-space:nowrap;">Page :</span>
-            <input id="cart-page" value="1/1" style="width:40px;" onchange="saveCartouche()">
-          </div>
-        </div>
+      <!-- Titre document -->
+      <div style="flex:1;text-align:center;">
+        <div id="header-title-display" style="color:#fff;font-weight:800;font-size:16px;letter-spacing:.6px;line-height:1.35;text-transform:uppercase;">ANALYSE DES RISQUES<br>D'ENTREPRISE</div>
+        <button onclick="openDocSettings()" style="background:none;border:none;color:var(--vb-soft);font-size:10px;cursor:pointer;margin-top:3px;padding:0;opacity:.7;transition:opacity .15s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.7">
+          ⚙ Paramètres du document
+        </button>
       </div>
 
       <!-- Site + actions -->
-      <div style="display:flex;align-items:center;gap:10px;">
+      <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
         <div>
-          <div style="color:#64748b;font-size:10px;font-weight:600;margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px;">Site</div>
-          <select id="site-select" onchange="changeSite()" style="background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;outline:none;cursor:pointer;">
+          <div style="color:var(--vb-soft);font-size:10px;font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:.6px;">Site</div>
+          <select id="site-select" onchange="changeSite()" style="background:var(--vb-mid);color:#d1fae5;border:1px solid var(--vb-brand);border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;outline:none;cursor:pointer;">
             <option>Ecoparc</option>
             <option>Logismar</option>
             <option>Nouaceur</option>
           </select>
         </div>
         <div style="display:flex;flex-direction:column;gap:5px;">
-          <button class="btn btn-primary" onclick="saveAll()" style="font-size:11px;padding:5px 12px;">
+          <button class="btn btn-primary" onclick="saveAll()" style="font-size:11px;padding:6px 13px;">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
             Sauvegarder
           </button>
-          <button class="btn btn-outline" onclick="openHistory()" style="font-size:11px;padding:5px 12px;border-color:#334155;color:#94a3b8;">
+          <button class="btn btn-outline" onclick="openHistory()" style="font-size:11px;padding:6px 13px;border-color:var(--vb-mid);color:var(--vb-soft);">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             Historique
           </button>
         </div>
         <div style="display:flex;flex-direction:column;gap:5px;">
-          <button class="btn btn-green" onclick="exportExcel()" style="font-size:11px;padding:5px 12px;">
+          <button class="btn btn-green" onclick="exportExcel()" style="font-size:11px;padding:6px 13px;">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             Excel
           </button>
-          <button class="btn btn-outline" onclick="exportPDF()" style="font-size:11px;padding:5px 12px;border-color:#334155;color:#94a3b8;">
+          <button class="btn btn-outline" onclick="exportPDF()" style="font-size:11px;padding:6px 13px;border-color:var(--vb-mid);color:var(--vb-soft);">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             PDF
           </button>
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Champs cartouche masqués (persistance données) -->
+  <div style="display:none;">
+    <input id="cart-company" value="FOODIPEX">
+    <input id="cart-title" value="ANALYSE DES RISQUES D'ENTREPRISE">
+    <input id="cart-ref" value="AUT_RH-22/03">
+    <input id="cart-version" value="00">
+    <input id="cart-page" value="1/1">
   </div>
 
   <div id="body">
@@ -336,7 +343,7 @@ select.form-input { cursor: pointer; }
               <th rowspan="2" style="min-width:160px;">Danger</th>
               <th rowspan="2" style="min-width:180px;">Risque identifié</th>
               <th rowspan="2" style="min-width:110px;">Population</th>
-              <th colspan="3" style="text-align:center;background:#0f172a;color:#38bdf8;font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;border-left:3px solid #38bdf8;border-right:3px solid #38bdf8;padding:6px 4px;">
+              <th colspan="3" style="text-align:center;background:var(--vb-deep);color:var(--vb-accent);font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;border-left:3px solid var(--vb-accent);border-right:3px solid var(--vb-accent);padding:6px 4px;">
                 ⚖ Cotation AMDEC &nbsp;—&nbsp; IPR = P × G × D
               </th>
               <th rowspan="2" class="has-tip" style="width:80px;text-align:center;">
@@ -838,30 +845,73 @@ function currentTab(data) { return data[state.tab]; }
 
 // ─── CARTOUCHE ───────────────────────────────────────────
 function saveCartouche() {
-  const data = loadSiteData(state.site);
+  var data = loadSiteData(state.site);
   data.cartouche = {
-    company:  document.getElementById('cart-company').value,
-    title:    document.getElementById('cart-title').value,
-    ref:      document.getElementById('cart-ref').value,
-    version:  document.getElementById('cart-version').value,
-    page:     document.getElementById('cart-page').value
+    company: document.getElementById('cart-company').value,
+    title:   document.getElementById('cart-title').value,
+    ref:     document.getElementById('cart-ref').value,
+    version: document.getElementById('cart-version').value,
+    page:    document.getElementById('cart-page').value
   };
   saveSiteData(state.site, data);
+  updateHeaderTitle();
 }
 
 function loadCartouche(data) {
-  const c = data.cartouche;
-  document.getElementById('cart-company').value  = c.company  || 'FOODIPEX';
-  document.getElementById('cart-title').value    = c.title    || "ANALYSE DES RISQUES D'ENTREPRISE";
-  document.getElementById('cart-ref').value      = c.ref      || 'AUT_RH-22/03';
-  document.getElementById('cart-version').value  = c.version  || '00';
-  document.getElementById('cart-page').value     = c.page     || '1/1';
+  var c = data.cartouche;
+  document.getElementById('cart-company').value = c.company || 'FOODIPEX';
+  document.getElementById('cart-title').value   = c.title   || "ANALYSE DES RISQUES D'ENTREPRISE";
+  document.getElementById('cart-ref').value     = c.ref     || 'AUT_RH-22/03';
+  document.getElementById('cart-version').value = c.version || '00';
+  document.getElementById('cart-page').value    = c.page    || '1/1';
+  updateHeaderTitle();
   // print cartouche sync
-  document.getElementById('pc-company').textContent = c.company;
-  document.getElementById('pc-title').textContent   = c.title;
-  document.getElementById('pc-ref').textContent     = 'Réf : ' + c.ref;
-  document.getElementById('pc-version').textContent = 'Version : ' + c.version;
-  document.getElementById('pc-page').textContent    = 'Page : ' + c.page;
+  document.getElementById('pc-company').textContent = c.company  || 'FOODIPEX';
+  document.getElementById('pc-title').textContent   = c.title    || "ANALYSE DES RISQUES D'ENTREPRISE";
+  document.getElementById('pc-ref').textContent     = 'Réf : '     + (c.ref     || 'AUT_RH-22/03');
+  document.getElementById('pc-version').textContent = 'Version : ' + (c.version || '00');
+  document.getElementById('pc-page').textContent    = 'Page : '    + (c.page    || '1/1');
+}
+
+function updateHeaderTitle() {
+  var raw = document.getElementById('cart-title').value || "ANALYSE DES RISQUES D'ENTREPRISE";
+  var el  = document.getElementById('header-title-display');
+  if (!el) return;
+  // split on explicit newline or at a space near the middle for long titles
+  if (raw.indexOf('\n') >= 0) {
+    el.innerHTML = raw.replace(/\n/g, '<br>');
+  } else if (raw.length > 22) {
+    var mid = Math.floor(raw.length / 2);
+    var sp  = raw.lastIndexOf(' ', mid);
+    if (sp < 1) sp = raw.indexOf(' ', mid);
+    el.innerHTML = sp > 0 ? raw.slice(0, sp) + '<br>' + raw.slice(sp + 1) : raw;
+  } else {
+    el.textContent = raw;
+  }
+}
+
+// ─── PARAMÈTRES DOCUMENT (modale) ────────────────────────
+function openDocSettings() {
+  var c = loadSiteData(state.site).cartouche || {};
+  document.getElementById('ds-company').value = c.company || 'FOODIPEX';
+  document.getElementById('ds-title').value   = c.title   || "ANALYSE DES RISQUES D'ENTREPRISE";
+  document.getElementById('ds-ref').value     = c.ref     || 'AUT_RH-22/03';
+  document.getElementById('ds-version').value = c.version || '00';
+  document.getElementById('ds-page').value    = c.page    || '1/1';
+  document.getElementById('doc-settings-overlay').style.display = 'flex';
+}
+function closeDocSettings() {
+  document.getElementById('doc-settings-overlay').style.display = 'none';
+}
+function submitDocSettings() {
+  document.getElementById('cart-company').value = document.getElementById('ds-company').value;
+  document.getElementById('cart-title').value   = document.getElementById('ds-title').value;
+  document.getElementById('cart-ref').value     = document.getElementById('ds-ref').value;
+  document.getElementById('cart-version').value = document.getElementById('ds-version').value;
+  document.getElementById('cart-page').value    = document.getElementById('ds-page').value;
+  saveCartouche();
+  closeDocSettings();
+  toast('✅ Paramètres du document enregistrés');
 }
 
 // ─── SCORING ─────────────────────────────────────────────
@@ -1346,49 +1396,58 @@ async function exportExcel() {
     ws.getRow(4).height = 6;
     ws.getRow(5).height = 30;
 
-    // ── CARTOUCHE ──
-    // Company  A1:C3
+    // ── CARTOUCHE (fond blanc, sobre) ──
+    const bk  = 'FFFFFFFF'; // blanc
+    const brd = 'FF595959'; // gris foncé bordure
+    const blk = 'FF1A1A1A'; // texte noir
+    const grn = 'FF174D30'; // vert bouteille accent
+
+    // Société  A1:C3
     ws.mergeCells('A1:C3');
     Object.assign(ws.getCell('A1'), {
       value: c.company || 'FOODIPEX',
-      font:  font({ bold: true, size: 16, color: { argb: 'FFFFFFFF' } }),
-      fill:  fill('0F172A'),
+      font:  font({ bold: true, size: 14, color: { argb: grn } }),
+      fill:  fill('FFFFFF'),
       alignment: align('center', 'middle'),
-      border: border(med('334155'), med('334155'), med('334155'), thin('334155'))
+      border: border(med(brd), med(brd), med(brd), thin(brd))
     });
 
-    // Title  D1:J3
+    // Titre document  D1:J3
     ws.mergeCells('D1:J3');
     Object.assign(ws.getCell('D1'), {
-      value: c.title || "ANALYSE DES RISQUES D'ENTREPRISE",
-      font:  font({ bold: true, size: 13, color: { argb: 'FFFFFFFF' } }),
-      fill:  fill('0F172A'),
+      value: (c.title || "ANALYSE DES RISQUES D'ENTREPRISE").replace(/\n/g, ' '),
+      font:  font({ bold: true, size: 13, color: { argb: blk } }),
+      fill:  fill('FFFFFF'),
       alignment: align('center', 'middle'),
-      border: border(med('334155'), thin('1E293B'), med('334155'), thin('1E293B'))
+      border: border(med(brd), thin(brd), med(brd), thin(brd))
     });
 
-    // Ref / Version / Page  K1:N1, K2:N2, K3:N3
+    // Réf / Version / Page  K1:N1, K2:N2, K3:N3
     const cartRows = [
-      ['K1:N1', `Réf : ${c.ref || 'AUT_RH-22/03'}`,    med('334155'), thin('1E293B')],
-      ['K2:N2', `Version : ${c.version || '00'}`,       thin('1E293B'), thin('1E293B')],
-      ['K3:N3', `Page : ${c.page || '1/1'}`,            thin('1E293B'), med('334155')]
+      ['K1:N1', 'Réf',     c.ref     || 'AUT_RH-22/03', med(brd), thin(brd)],
+      ['K2:N2', 'Version', c.version || '00',            thin(brd), thin(brd)],
+      ['K3:N3', 'Page',    c.page    || '1/1',           thin(brd), med(brd)]
     ];
-    cartRows.forEach(([range, val, topB, botB]) => {
+    cartRows.forEach(function(row) {
+      var range = row[0], label = row[1], val = row[2], topB = row[3], botB = row[4];
       ws.mergeCells(range);
-      const cell = ws.getCell(range.split(':')[0]);
+      var cell = ws.getCell(range.split(':')[0]);
       Object.assign(cell, {
-        value: val,
-        font:  font({ size: 10, color: { argb: 'FFE2E8F0' } }),
-        fill:  fill('0F172A'),
+        value: { richText: [
+          { font: font({ bold: true, size: 10, color: { argb: 'FF6B7280' } }), text: label + ' : ' },
+          { font: font({ bold: false, size: 10, color: { argb: blk } }),        text: val }
+        ]},
+        fill:  fill('FFFFFF'),
         alignment: { horizontal: 'left', vertical: 'middle', indent: 1 },
-        border: border(topB, thin('334155'), botB, med('334155'))
+        border: border(topB, thin(brd), botB, med(brd))
       });
     });
 
-    // ── SEPARATOR ROW 4 (blank, navy) ──
-    for (let col = 1; col <= 14; col++) {
-      ws.getCell(4, col).fill = fill('1E293B');
+    // ── SÉPARATEUR ROW 4 (ligne fine verte) ──
+    for (var col = 1; col <= 14; col++) {
+      ws.getCell(4, col).fill = fill('174D30');
     }
+    ws.getRow(4).height = 4;
 
     // ── COLUMN HEADERS row 5 ──
     const HEADERS = ['#','Catégorie','Danger / Source','Risque identifié','Population','P','G','D','IPR','Niveau','Actions existantes','Actions recommandées','Réf. SMETA','Statut'];
@@ -1468,7 +1527,7 @@ function exportPDF() {
   const data = loadSiteData(state.site);
   const c = data.cartouche;
   document.getElementById('pc-company').textContent = c.company;
-  document.getElementById('pc-title').textContent   = c.title;
+  document.getElementById('pc-title').textContent   = c.title || "ANALYSE DES RISQUES D'ENTREPRISE";
   document.getElementById('pc-ref').textContent     = 'Réf : ' + c.ref;
   document.getElementById('pc-version').textContent = 'Version : ' + c.version;
   document.getElementById('pc-page').textContent    = 'Page : ' + c.page;
@@ -1614,5 +1673,48 @@ document.addEventListener('DOMContentLoaded', () => {
   setFilter('all');
 });
 </script>
+
+<!-- ═══════════════ MODALE : PARAMÈTRES DOCUMENT ═══════════════ -->
+<div class="modal-overlay" id="doc-settings-overlay" style="display:none;" onclick="if(event.target===this)closeDocSettings()">
+  <div class="modal-box" style="max-width:440px;">
+    <div style="padding:24px 28px 0;border-bottom:1px solid #e5e7eb;margin-bottom:20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:16px;">
+        <div>
+          <div style="font-weight:700;font-size:15px;color:#111827;">Paramètres du document</div>
+          <div style="font-size:12px;color:#6b7280;margin-top:2px;">Informations figurant sur le cartouche Excel</div>
+        </div>
+        <button onclick="closeDocSettings()" style="background:#f3f4f6;border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;color:#6b7280;display:flex;align-items:center;justify-content:center;">✕</button>
+      </div>
+    </div>
+    <div style="padding:0 28px 24px;display:flex;flex-direction:column;gap:14px;">
+      <div>
+        <label style="font-size:11px;font-weight:600;color:#374151;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px;">Société</label>
+        <input id="ds-company" style="width:100%;padding:8px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:13px;box-sizing:border-box;outline:none;" onfocus="this.style.borderColor='#166534'" onblur="this.style.borderColor='#d1d5db'">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:600;color:#374151;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px;">Titre du document</label>
+        <input id="ds-title" style="width:100%;padding:8px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:13px;box-sizing:border-box;outline:none;" onfocus="this.style.borderColor='#166534'" onblur="this.style.borderColor='#d1d5db'" placeholder="ex: ANALYSE DES RISQUES D'ENTREPRISE">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 80px 80px;gap:10px;">
+        <div>
+          <label style="font-size:11px;font-weight:600;color:#374151;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px;">Référence</label>
+          <input id="ds-ref" style="width:100%;padding:8px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:13px;box-sizing:border-box;outline:none;" onfocus="this.style.borderColor='#166534'" onblur="this.style.borderColor='#d1d5db'">
+        </div>
+        <div>
+          <label style="font-size:11px;font-weight:600;color:#374151;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px;">Version</label>
+          <input id="ds-version" style="width:100%;padding:8px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:13px;box-sizing:border-box;outline:none;" onfocus="this.style.borderColor='#166534'" onblur="this.style.borderColor='#d1d5db'">
+        </div>
+        <div>
+          <label style="font-size:11px;font-weight:600;color:#374151;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px;">Page</label>
+          <input id="ds-page" style="width:100%;padding:8px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:13px;box-sizing:border-box;outline:none;" onfocus="this.style.borderColor='#166534'" onblur="this.style.borderColor='#d1d5db'">
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:6px;justify-content:flex-end;">
+        <button onclick="closeDocSettings()" style="padding:9px 18px;border:1px solid #d1d5db;background:#fff;border-radius:8px;font-size:13px;font-weight:500;color:#374151;cursor:pointer;">Annuler</button>
+        <button onclick="submitDocSettings()" style="padding:9px 18px;background:#166534;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
